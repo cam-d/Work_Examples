@@ -1,0 +1,31 @@
+import requests
+from requests.auth import HTTPBasicAuth
+import json
+import pandas as pd
+
+
+def get_data(url):
+  headers = {
+        "Accept": "application/json"
+        }
+  response = requests.request("GET", url, headers=headers)
+  j = json.dumps(json.loads(response.text), sort_keys = True, indent = 4, separators = (",", ": "))
+  out = json.loads(j)
+  columns = list(out['features'][0]['properties'].keys())
+  data = []
+  for i in range(0,len(out['features'])):
+    v = list({**out['features'][i]['properties']}.values())
+    data.append(v)
+
+  df = pd.DataFrame(data = data, columns = columns)
+  print(df.shape[0], 'rows',df.shape[1], 'cols')
+  return df
+
+
+dwelling = get_data('https://opendata.arcgis.com/datasets/53ee1065351c4273ab91ba2e6cfbbc6d_2.geojson')
+sales = get_data('https://opendata.arcgis.com/datasets/764b1798c0434003a862e2734ba2b705_1.geojson')
+values = get_data('https://opendata.arcgis.com/datasets/63b4c91c3a16425fb5ef9118dbce39ba_2.geojson')
+legal = get_data('https://opendata.arcgis.com/datasets/0c3415baff124473832c0e821c0a4ddc_1.geojson')
+land = get_data('https://opendata.arcgis.com/datasets/f1f0f31844cf49489134f9fa2b8f16f5_3.geojson')
+parcels = get_data('https://opendata.arcgis.com/datasets/7607cf5046c5495183251d1c9dba0014_1.geojson')
+owners = get_data('https://opendata.arcgis.com/datasets/753448c6e45c434d97b61e77ea752079_2.geojson')
